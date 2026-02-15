@@ -1,0 +1,44 @@
+name: invoice_generator
+description: A complete Flutter invoice generator app with local storage and PDF generation
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Database
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  path_provider: ^2.1.1
+
+  # Date formatting
+  intl: ^0.18.1
+
+  # PDF Generation
+  pdf: ^3.10.7
+  printing: ^5.11.1
+
+  # Share functionality
+  share_plus: ^7.2.1
+
+  # Icons
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.1
+
+assets:
+  - assets/fonts/Roboto-Regular.ttf
+
+
+flutter:
+  uses-material-design: true
