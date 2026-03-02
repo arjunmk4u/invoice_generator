@@ -4,6 +4,7 @@ import '../models/invoice_model.dart';
 import '../models/user_profile.dart';
 import '../services/storage_service.dart';
 import '../services/pdf_service.dart';
+import 'create_invoice_screen.dart';
 
 class InvoicePreviewScreen extends StatefulWidget {
   final Invoice invoice;
@@ -85,6 +86,62 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
     }
   }
 
+  Future<void> _deleteInvoice() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Invoice'),
+        content: const Text('Are you sure you want to delete this invoice?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await _storage.deleteInvoice(_invoice.id!);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invoice deleted successfully')),
+          );
+          Navigator.pop(context, true);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _editInvoice() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateInvoiceScreen(invoice: _invoice),
+      ),
+    );
+
+    if (result == true) {
+      final updatedInvoice = await _storage.getInvoice(_invoice.id!);
+      if (updatedInvoice != null) {
+        setState(() {
+          _invoice = updatedInvoice;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +174,38 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
             icon: const Icon(Icons.print_outlined, color: Colors.black),
             tooltip: 'Print Invoice',
             onPressed: _printInvoice,
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Colors.black),
+            onSelected: (value) {
+              if (value == 'edit') {
+                _editInvoice();
+              } else if (value == 'delete') {
+                _deleteInvoice();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, color: Colors.black54),
+                    SizedBox(width: 8),
+                    Text('Edit'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('Delete', style: TextStyle(color: Colors.red)),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -181,7 +270,7 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
 
             _tableHeader(),
 
-            ..._invoice.items.map(_itemRow).toList(),
+            ..._invoice.items.map(_itemRow),
 
             const SizedBox(height: 24),
 
@@ -267,8 +356,8 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
       ),
-      child: Row(
-        children: const [
+      child: const Row(
+        children: [
           Expanded(flex: 3, child: Text('ITEM', style: _th)),
           SizedBox(width: 40, child: Text('QTY', textAlign: TextAlign.center, style: _th)),
           SizedBox(width: 90, child: Text('PRICE', textAlign: TextAlign.right, style: _th)),

@@ -53,7 +53,7 @@ class Invoice {
         (e) => e.name == map['status'],
         orElse: () => InvoiceStatus.pending,
       ),
-      grandTotal: map['grandTotal'] as double,
+      grandTotal: (map['grandTotal'] as num).toDouble(),
       notes: map['notes'] as String?,
       items: items,
       createdAt: DateTime.parse(map['createdAt'] as String),
@@ -100,7 +100,7 @@ class InvoiceItem {
   final int? id;
   final int? invoiceId;
   final String itemName;
-  final int quantity;
+  final double quantity;
   final double pricePerUnit;
   final double total;
 
@@ -132,8 +132,8 @@ class InvoiceItem {
       id: map['id'] as int?,
       invoiceId: map['invoiceId'] as int?,
       itemName: map['itemName'] as String,
-      quantity: map['quantity'] as int,
-      pricePerUnit: map['pricePerUnit'] as double,
+      quantity: (map['quantity'] as num).toDouble(),
+      pricePerUnit: (map['pricePerUnit'] as num).toDouble(),
     );
   }
 
@@ -141,7 +141,7 @@ class InvoiceItem {
     int? id,
     int? invoiceId,
     String? itemName,
-    int? quantity,
+    double? quantity,
     double? pricePerUnit,
   }) {
     return InvoiceItem(

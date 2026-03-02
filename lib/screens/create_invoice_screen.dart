@@ -6,7 +6,8 @@ import '../services/storage_service.dart';
 import '../services/pdf_service.dart';
 
 class CreateInvoiceScreen extends StatefulWidget {
-  const CreateInvoiceScreen({super.key});
+  final Invoice? invoice;
+  const CreateInvoiceScreen({super.key, this.invoice});
 
   @override
   State<CreateInvoiceScreen> createState() => _CreateInvoiceScreenState();
@@ -24,12 +25,21 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
   @override
   void initState() {
     super.initState();
-    _loadInvoiceNumber();
     _loadUserProfile();
-    // Start with empty items template
-    _items = [
-      InvoiceItem(itemName: '', quantity: 1, pricePerUnit: 0),
-    ];
+    if (widget.invoice != null) {
+      _invoiceNumber = widget.invoice!.invoiceNumber;
+      _clientNameController.text = widget.invoice!.clientName;
+      _issueDate = widget.invoice!.issueDate;
+      _items = List.from(widget.invoice!.items);
+      if (_items.isEmpty) {
+        _items = [InvoiceItem(itemName: '', quantity: 1.0, pricePerUnit: 0)];
+      }
+    } else {
+      _loadInvoiceNumber();
+      _items = [
+        InvoiceItem(itemName: '', quantity: 1.0, pricePerUnit: 0),
+      ];
+    }
   }
 
   Future<void> _loadInvoiceNumber() async {
@@ -52,7 +62,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
 
   void _addItem() {
     setState(() {
-      _items.add(InvoiceItem(itemName: '', quantity: 1, pricePerUnit: 0));
+      _items.add(InvoiceItem(itemName: '', quantity: 1.0, pricePerUnit: 0));
     });
   }
 
@@ -64,7 +74,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
     }
   }
 
-  void _updateItem(int index, String name, int qty, double price) {
+  void _updateItem(int index, String name, double qty, double price) {
     setState(() {
       _items[index] = InvoiceItem(
         itemName: name,
@@ -115,17 +125,22 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
 
     try {
       final invoice = Invoice(
+        id: widget.invoice?.id,
         invoiceNumber: _invoiceNumber,
         clientName: _clientNameController.text,
         issueDate: _issueDate,
-        status: InvoiceStatus.pending,
+        status: widget.invoice?.status ?? InvoiceStatus.pending,
         grandTotal: _grandTotal,
         items: validItems,
-        notes: '',
+        notes: widget.invoice?.notes ?? '',
       );
 
       // Save to database
-      await _storage.createInvoice(invoice);
+      if (widget.invoice != null) {
+        await _storage.updateInvoice(invoice);
+      } else {
+        await _storage.createInvoice(invoice);
+      }
 
       // Generate and print PDF directly (no share dialog)
       if (_userProfile != null) {
@@ -138,8 +153,8 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invoice created successfully!'),
+          SnackBar(
+            content: Text(widget.invoice != null ? 'Invoice updated successfully!' : 'Invoice created successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -165,9 +180,9 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'New Invoice',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        title: Text(
+          widget.invoice != null ? 'Edit Invoice' : 'New Invoice',
+          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
@@ -381,7 +396,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
 class _ItemCard extends StatefulWidget {
   final InvoiceItem item;
   final VoidCallback onDelete;
-  final Function(String, int, double) onUpdate;
+  final Function(String, double, double) onUpdate;
   final bool showDelete;
 
   const _ItemCard({
@@ -405,10 +420,18 @@ class _ItemCardState extends State<_ItemCard> {
     super.initState();
     _nameController = TextEditingController(text: widget.item.itemName);
     _quantityController = TextEditingController(
-      text: widget.item.quantity > 0 ? widget.item.quantity.toString() : '',
+      text: widget.item.quantity > 0
+          ? (widget.item.quantity == widget.item.quantity.toInt()
+              ? widget.item.quantity.toInt().toString()
+              : widget.item.quantity.toString())
+          : '',
     );
     _priceController = TextEditingController(
-      text: widget.item.pricePerUnit > 0 ? widget.item.pricePerUnit.toString() : '',
+      text: widget.item.pricePerUnit > 0
+          ? (widget.item.pricePerUnit == widget.item.pricePerUnit.toInt()
+              ? widget.item.pricePerUnit.toInt().toString()
+              : widget.item.pricePerUnit.toString())
+          : '',
     );
   }
 
@@ -422,8 +445,10 @@ class _ItemCardState extends State<_ItemCard> {
 
   void _updateItem() {
     final name = _nameController.text;
-    final qty = int.tryParse(_quantityController.text) ?? 1;
-    final price = double.tryParse(_priceController.text) ?? 0;
+    final qtyStr = _quantityController.text.replaceAll(',', '.');
+    final qty = double.tryParse(qtyStr) ?? 1.0;
+    final priceStr = _priceController.text.replaceAll(',', '.');
+    final price = double.tryParse(priceStr) ?? 0.0;
     widget.onUpdate(name, qty, price);
   }
 
@@ -484,7 +509,7 @@ class _ItemCardState extends State<_ItemCard> {
                     TextField(
                       controller: _quantityController,
                       onChanged: (_) => _updateItem(),
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: const InputDecoration(
                         hintText: '0',
                         border: InputBorder.none,
@@ -511,7 +536,7 @@ class _ItemCardState extends State<_ItemCard> {
                     TextField(
                       controller: _priceController,
                       onChanged: (_) => _updateItem(),
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: const InputDecoration(
                         prefixText: '₹ ',
                         hintText: '0',

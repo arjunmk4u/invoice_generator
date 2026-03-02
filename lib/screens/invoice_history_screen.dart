@@ -6,6 +6,10 @@ import 'create_invoice_screen.dart';
 import 'invoice_preview_screen.dart';
 import 'profile_edit_screen.dart';
 
+
+
+
+// the decimal calculation isn'nt working
 class InvoiceHistoryScreen extends StatefulWidget {
   const InvoiceHistoryScreen({super.key});
 
@@ -74,7 +78,7 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -95,7 +99,7 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
                           letterSpacing: 1,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 5),
                       Text(
                         _userProfile?.userName ?? 'User',
                         style: const TextStyle(
@@ -150,7 +154,7 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: _ActionCard(
-                                  icon: Icons.description_outlined,
+                                  icon: Icons.description,
                                   title: 'Select\nTemplate',
                                   color: Colors.white,
                                   textColor: const Color(0xFF2196F3),
