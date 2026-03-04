@@ -105,9 +105,13 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final displayedInvoices = _filteredInvoices;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1A1A2E) : Colors.white;
+    final bgText = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final inputBg = isDark ? const Color(0xFF1A1A2E) : Colors.white;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF8F9FA),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreateInvoice,
         backgroundColor: const Color(0xFF5A5CE1),
@@ -129,12 +133,12 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Invoices',
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF1A1A1A),
+                                color: bgText,
                                 letterSpacing: -1.0,
                               ),
                             ),
@@ -146,7 +150,7 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
                                   child: Container(
                                     height: 56,
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: inputBg,
                                       borderRadius: BorderRadius.circular(28),
                                       boxShadow: [
                                         BoxShadow(
@@ -201,8 +205,6 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
                                   _buildFilterChip('Pending'),
                                   const SizedBox(width: 12),
                                   _buildFilterChip('Paid'),
-                                  const SizedBox(width: 12),
-                                  _buildFilterChip('Overdue'),
                                   const SizedBox(width: 12),
                                   GestureDetector(
                                     onTap: _pickDateRange,
@@ -301,15 +303,16 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
 
   Widget _buildFilterChip(String label) {
     final isSelected = _selectedFilter == label;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: () => setState(() => _selectedFilter = label),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF5A5CE1) : Colors.white,
+          color: isSelected ? const Color(0xFF5A5CE1) : (isDark ? const Color(0xFF1A1A2E) : Colors.white),
           borderRadius: BorderRadius.circular(24),
-          border: isSelected ? null : Border.all(color: Colors.grey.shade200, width: 1.5),
+          border: isSelected ? null : Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade200, width: 1.5),
           boxShadow: isSelected
               ? [
                   BoxShadow(
@@ -323,7 +326,7 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey.shade600,
+            color: isSelected ? Colors.white : (isDark ? Colors.grey.shade300 : Colors.grey.shade600),
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
             fontSize: 14,
           ),
@@ -341,17 +344,18 @@ class _InvoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -374,11 +378,12 @@ class _InvoiceCard extends StatelessWidget {
                 children: [
                   Text(
                     '#${invoice.invoiceNumber}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1A1A1A),
+                      color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 6),
                   Row(

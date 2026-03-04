@@ -2,6 +2,8 @@ class Invoice {
   final int? id;
   final String invoiceNumber;
   final String clientName;
+  final String? clientEmail;
+  final String? clientPhone;
   final DateTime issueDate;
   final InvoiceStatus status;
   final double grandTotal;
@@ -14,6 +16,8 @@ class Invoice {
     this.id,
     required this.invoiceNumber,
     required this.clientName,
+    this.clientEmail,
+    this.clientPhone,
     required this.issueDate,
     required this.status,
     required this.grandTotal,
@@ -34,6 +38,8 @@ class Invoice {
       'id': id,
       'invoiceNumber': invoiceNumber,
       'clientName': clientName,
+      'clientEmail': clientEmail,
+      'clientPhone': clientPhone,
       'issueDate': issueDate.toIso8601String(),
       'status': status.name,
       'grandTotal': grandTotal,
@@ -48,6 +54,8 @@ class Invoice {
       id: map['id'] as int?,
       invoiceNumber: map['invoiceNumber'] as String,
       clientName: map['clientName'] as String,
+      clientEmail: map['clientEmail'] as String?,
+      clientPhone: map['clientPhone'] as String?,
       issueDate: DateTime.parse(map['issueDate'] as String),
       status: InvoiceStatus.values.firstWhere(
         (e) => e.name == map['status'],
@@ -65,6 +73,8 @@ class Invoice {
     int? id,
     String? invoiceNumber,
     String? clientName,
+    String? clientEmail,
+    String? clientPhone,
     DateTime? issueDate,
     InvoiceStatus? status,
     double? grandTotal,
@@ -75,6 +85,8 @@ class Invoice {
       id: id ?? this.id,
       invoiceNumber: invoiceNumber ?? this.invoiceNumber,
       clientName: clientName ?? this.clientName,
+      clientEmail: clientEmail ?? this.clientEmail,
+      clientPhone: clientPhone ?? this.clientPhone,
       issueDate: issueDate ?? this.issueDate,
       status: status ?? this.status,
       grandTotal: grandTotal ?? this.grandTotal,

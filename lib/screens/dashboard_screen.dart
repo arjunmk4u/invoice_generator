@@ -62,15 +62,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgText = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final subText = isDark ? Colors.grey.shade400 : Colors.grey.shade500;
+    final cardBg = isDark ? const Color(0xFF1A1A2E) : Colors.white;
+    final scaffoldBg = isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF8F9FA);
+    final gradientColors = isDark
+        ? [const Color(0xFF1A1A3E), const Color(0xFF0F0F1A)]
+        : [const Color(0xFFE0E7FF), const Color(0xFFF3E8FF), const Color(0xFFF8F9FA)];
+
     return Scaffold(
-      backgroundColor: Colors.transparent, // Let container show through if needed
+      backgroundColor: scaffoldBg,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFE0E7FF), Color(0xFFF3E8FF), Color(0xFFF8F9FA)],
+            colors: gradientColors,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            stops: [0.0, 0.5, 1.0],
+            stops: isDark ? const [0.0, 1.0] : const [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
@@ -96,7 +105,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   'DASHBOARD',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey.shade500,
+                                    color: subText,
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: 1.2,
                                   ),
@@ -106,10 +115,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   _userProfile?.companyName?.isNotEmpty == true 
                                       ? _userProfile!.companyName! 
                                       : (_userProfile?.userName ?? 'My Business'),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w800,
-                                    color: Color(0xFF1A1A1A),
+                                    color: bgText,
                                     letterSpacing: -0.5,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -120,41 +129,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white,
+                              color: cardBg,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
-                            child: ValueListenableBuilder(
-                              valueListenable: themeNotifier,
-                              builder: (context, mode, _) => IconButton(
-                                icon: Icon(
-                                  mode == ThemeMode.dark
-                                      ? Icons.light_mode_rounded
-                                      : Icons.dark_mode_rounded,
-                                  color: const Color(0xFF1A1A1A),
-                                ),
-                                onPressed: () {
-                                  themeNotifier.value = themeNotifier.value == ThemeMode.dark
-                                      ? ThemeMode.light
-                                      : ThemeMode.dark;
-                                },
-                              ),
-                            ),
+                            // child: ValueListenableBuilder(
+                            //   valueListenable: themeNotifier,
+                            //   builder: (context, mode, _) => IconButton(
+                            //     icon: Icon(
+                            //       mode == ThemeMode.dark
+                            //           ? Icons.light_mode_rounded
+                            //           : Icons.dark_mode_rounded,
+                            //       color: bgText,
+                            //     ),
+                            //     onPressed: () {
+                            //       themeNotifier.value = themeNotifier.value == ThemeMode.dark
+                            //           ? ThemeMode.light
+                            //           : ThemeMode.dark;
+                            //     },
+                            //   ),
+                            // ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 32),
-                      const Text(
+                      Text(
                         'Welcome back',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF1E1B4B),
+                          color: isDark ? Colors.white : const Color(0xFF1E1B4B),
                           letterSpacing: -1.0,
                         ),
                       ),
@@ -249,11 +258,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(height: 32),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: cardBg,
                           borderRadius: BorderRadius.circular(32),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.02),
+                              color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -267,12 +276,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                  Text( // Removed const
                                     'Recent Invoices',
-                                    style: TextStyle(
+                                    style: TextStyle( // Removed const
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1A1A1A),
+                                      color: bgText, // Changed to theme-aware
                                     ),
                                   ),
                                   GestureDetector(
@@ -315,17 +324,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildRecentInvoiceCard(Invoice invoice) {
+    final isDark = themeNotifier.value == ThemeMode.dark;
     return GestureDetector(
       onTap: () => _viewInvoice(invoice),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -348,17 +358,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   Text(
                     invoice.clientName.isEmpty ? 'Unknown Client' : invoice.clientName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
-                      color: Color(0xFF1A1A1A),
+                      color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${invoice.clientName} • ${_formatDate(invoice.issueDate)}',
+                    '${invoice.invoiceNumber} • ${_formatDate(invoice.issueDate)}',
                     style: TextStyle(
                       color: Colors.grey.shade500,
                       fontSize: 13,
@@ -372,10 +382,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(width: 8),
             Text(
               '₹${invoice.grandTotal.toStringAsFixed(2)}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 16,
-                color: Color(0xFF1A1A1A),
+                color: isDark ? Colors.white : const Color(0xFF1A1A1A),
               ),
             ),
           ],

@@ -202,8 +202,11 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgText = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final cardBg = isDark ? const Color(0xFF1A1A2E) : Colors.white;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -218,10 +221,10 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
             ),
           ),
         ),
-        title: const Text(
+        title: Text(
           'Invoice Details',
           style: TextStyle(
-            color: Color(0xFF1A1A1A),
+            color: bgText,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -453,12 +456,26 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
                             const SizedBox(height: 7),
                             Text(
                               _invoice.clientName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF1A1A1A),
+                                color: bgText,
                               ),
                             ),
+                            if (_invoice.clientEmail?.isNotEmpty == true) ...[
+                              const SizedBox(height: 3),
+                              Text(
+                                _invoice.clientEmail!,
+                                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                              ),
+                            ],
+                            if (_invoice.clientPhone?.isNotEmpty == true) ...[
+                              const SizedBox(height: 3),
+                              Text(
+                                _invoice.clientPhone!,
+                                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                              ),
+                            ],
                           ],
                         ),
                       ),

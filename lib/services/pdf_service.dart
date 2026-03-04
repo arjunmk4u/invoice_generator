@@ -102,6 +102,14 @@ class PdfService {
                       pw.Text('Bill To', style: boldText),
                       pw.SizedBox(height: 4),
                       pw.Text(invoice.clientName, style: boldText),
+                      if (invoice.clientEmail?.isNotEmpty == true) ...[
+                        pw.SizedBox(height: 2),
+                        pw.Text(invoice.clientEmail!, style: baseText),
+                      ],
+                      if (invoice.clientPhone?.isNotEmpty == true) ...[
+                        pw.SizedBox(height: 2),
+                        pw.Text(invoice.clientPhone!, style: baseText),
+                      ],
                     ],
                   ),
                   pw.Column(

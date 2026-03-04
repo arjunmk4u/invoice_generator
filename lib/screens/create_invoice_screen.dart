@@ -35,6 +35,8 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
     if (widget.invoice != null) {
       _invoiceNumber = widget.invoice!.invoiceNumber;
       _clientNameController.text = widget.invoice!.clientName;
+      _clientEmailController.text = widget.invoice!.clientEmail ?? '';
+      _clientPhoneController.text = widget.invoice!.clientPhone ?? '';
       _issueDate = widget.invoice!.issueDate;
       _items = List.from(widget.invoice!.items);
       if (_items.isEmpty) {
@@ -162,11 +164,13 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
         id: widget.invoice?.id,
         invoiceNumber: _invoiceNumber,
         clientName: _clientNameController.text,
+        clientEmail: _clientEmailController.text.isNotEmpty ? _clientEmailController.text : null,
+        clientPhone: _clientPhoneController.text.isNotEmpty ? _clientPhoneController.text : null,
         issueDate: _issueDate,
         status: widget.invoice?.status ?? InvoiceStatus.pending,
         grandTotal: _grandTotal,
         items: validItems,
-        notes: widget.invoice?.notes ?? '', // Just ignore email/phone for now since not in model
+        notes: widget.invoice?.notes ?? '',
       );
 
       if (widget.invoice != null) {
@@ -204,8 +208,10 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgText = isDark ? Colors.white : const Color(0xFF1A1A1A);
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -222,7 +228,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
         ),
         title: Text(
           widget.invoice != null ? 'Edit Invoice' : 'Create Invoice',
-          style: const TextStyle(color: Color(0xFF1A1A1A), fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(color: bgText, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
           Padding(

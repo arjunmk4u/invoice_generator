@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart' show themeNotifier;
 import '../models/user_profile.dart';
 import '../services/storage_service.dart';
 
@@ -131,24 +132,27 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgText = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final cardBg = isDark ? const Color(0xFF1A1A2E) : Colors.white;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        automaticallyImplyLeading: false, // Prevent black screen issue caused by popping root tab
-        title: const Text(
+        automaticallyImplyLeading: false,
+        title: Text(
           'Business Profile',
           style: TextStyle(
-            color: Color(0xFF1A1A1A),
+            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Color(0xFF1A1A1A)),
+            icon: Icon(Icons.more_vert, color: isDark ? Colors.white : const Color(0xFF1A1A1A)),
             onSelected: (value) {
               if (value == 'clear') _clearAllFields();
             },
@@ -183,9 +187,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       children: [
                         Icon(Icons.business_center, color: const Color(0xFF5A5CE1), size: 20),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'General Information',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: bgText),
                         ),
                       ],
                     ),
@@ -193,9 +197,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cardBg,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
+                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.2 : 0.02), blurRadius: 10, offset: const Offset(0, 4))],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,9 +226,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       children: [
                         Icon(Icons.description, color: const Color(0xFF5A5CE1), size: 20),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'Compliance & Tax',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: bgText),
                         ),
                       ],
                     ),
@@ -232,9 +236,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cardBg,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
+                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.2 : 0.02), blurRadius: 10, offset: const Offset(0, 4))],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,20 +375,21 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   Widget _buildTextField(TextEditingController controller, String hint, {TextInputType? type, int maxLines = 1}) {
+    final isDark = themeNotifier.value == ThemeMode.dark;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
+        color: isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF8F9FA),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
       ),
       child: TextField(
         controller: controller,
         keyboardType: type,
         maxLines: maxLines,
-        style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
+        style: TextStyle(fontSize: 14, color: isDark ? Colors.white : const Color(0xFF1A1A1A)),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey.shade400),
+          hintStyle: TextStyle(color: isDark ? Colors.grey.shade600 : Colors.grey.shade400),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
