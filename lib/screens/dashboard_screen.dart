@@ -74,6 +74,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: scaffoldBg,
       body: Container(
+<<<<<<< HEAD
+=======
+        constraints: BoxConstraints(minHeight: MediaQuery.sizeOf(context).height),
+>>>>>>> feature
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: gradientColors,
