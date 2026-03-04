@@ -21,6 +21,8 @@ class PdfService {
 
     // Calculate totals
     double totalQty = invoice.items.fold(0.0, (sum, item) => sum + item.quantity);
+    double subtotal = invoice.items.fold(0.0, (sum, item) => sum + item.total);
+    double discount = subtotal - invoice.grandTotal;
     double amountReceived = invoice.status == InvoiceStatus.paid ? invoice.grandTotal : 0.0;
     double balance = invoice.grandTotal - amountReceived;
 
@@ -100,6 +102,14 @@ class PdfService {
                       pw.Text('Bill To', style: boldText),
                       pw.SizedBox(height: 4),
                       pw.Text(invoice.clientName, style: boldText),
+                      if (invoice.clientEmail?.isNotEmpty == true) ...[
+                        pw.SizedBox(height: 2),
+                        pw.Text(invoice.clientEmail!, style: baseText),
+                      ],
+                      if (invoice.clientPhone?.isNotEmpty == true) ...[
+                        pw.SizedBox(height: 2),
+                        pw.Text(invoice.clientPhone!, style: baseText),
+                      ],
                     ],
                   ),
                   pw.Column(
@@ -215,9 +225,19 @@ class PdfService {
                           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                           children: [
                             pw.Text('Sub Total', style: baseText.copyWith(fontSize: 9)),
-                            pw.Text('Rs ${invoice.grandTotal.toStringAsFixed(2)}', style: baseText.copyWith(fontSize: 9)),
+                            pw.Text('Rs ${subtotal.toStringAsFixed(2)}', style: baseText.copyWith(fontSize: 9)),
                           ],
                         ),
+                        if (discount > 0.01) ...[
+                          pw.SizedBox(height: 2),
+                          pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                            children: [
+                              pw.Text('Discount', style: baseText.copyWith(fontSize: 9)),
+                              pw.Text('- Rs ${discount.toStringAsFixed(2)}', style: baseText.copyWith(fontSize: 9)),
+                            ],
+                          ),
+                        ],
                         pw.SizedBox(height: 2),
                         pw.Container(
                           color: PdfColors.grey700,
@@ -260,7 +280,7 @@ class PdfService {
                             crossAxisAlignment: pw.CrossAxisAlignment.end,
                             children: [
                               pw.Text(
-                                'For: ${userProfile.companyName?.isNotEmpty == true ? userProfile.companyName!.toUpperCase() : ''}',
+                                'From: ${userProfile.companyName?.isNotEmpty == true ? userProfile.companyName!.toUpperCase() : ''}',
                                 style: pw.TextStyle(font: fontBold, fontSize: 9),
                               ),
                               pw.SizedBox(height: 50), // Space for signature

@@ -113,6 +113,10 @@ class StorageService {
     return await updateInvoiceStatus(id, InvoiceStatus.paid);
   }
 
+  Future<int> markInvoiceAsUnpaid(int id) async {
+    return await updateInvoiceStatus(id, InvoiceStatus.pending);
+  }
+
   Future<String> generateNextInvoiceNumber() async {
     final count = await _dbHelper.getInvoiceCount();
     return Invoice.generateInvoiceNumber(count);
