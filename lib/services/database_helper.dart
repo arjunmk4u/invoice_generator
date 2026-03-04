@@ -19,7 +19,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2, // Updated version
+      version: 3, // Added clientEmail, clientPhone columns
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -32,12 +32,14 @@ class DatabaseHelper {
     const realType = 'REAL NOT NULL';
     const intType = 'INTEGER NOT NULL';
 
-    // Invoices table (removed dueDate)
+    // Invoices table
     await db.execute('''
       CREATE TABLE invoices (
         id $idType,
         invoiceNumber $textType,
         clientName $textType,
+        clientEmail $textTypeNullable,
+        clientPhone $textTypeNullable,
         issueDate $textType,
         status $textType,
         grandTotal $realType,
@@ -52,7 +54,7 @@ class DatabaseHelper {
         id $idType,
         invoiceId $intType,
         itemName $textType,
-        quantity $intType,
+        quantity $realType,
         pricePerUnit $realType,
         total $realType,
         FOREIGN KEY (invoiceId) REFERENCES invoices (id) ON DELETE CASCADE
@@ -106,6 +108,12 @@ class DatabaseHelper {
         'companyEmail': '',
         'gstNumber': '',
       });
+    }
+
+    if (oldVersion < 3) {
+      // Add clientEmail and clientPhone to invoices table
+      await db.execute('ALTER TABLE invoices ADD COLUMN clientEmail TEXT');
+      await db.execute('ALTER TABLE invoices ADD COLUMN clientPhone TEXT');
     }
   }
 
