@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../main.dart' show themeNotifier;
 import '../models/invoice_model.dart';
 import '../models/user_profile.dart';
@@ -74,10 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: scaffoldBg,
       body: Container(
-<<<<<<< HEAD
-=======
         constraints: BoxConstraints(minHeight: MediaQuery.sizeOf(context).height),
->>>>>>> feature
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: gradientColors,
@@ -372,7 +369,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${invoice.invoiceNumber} • ${_formatDate(invoice.issueDate)}',
+                    '${invoice.invoiceNumber} â€¢ ${_formatDate(invoice.issueDate)}',
                     style: TextStyle(
                       color: Colors.grey.shade500,
                       fontSize: 13,
@@ -385,7 +382,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              '₹${invoice.grandTotal.toStringAsFixed(2)}',
+              'â‚¹${invoice.grandTotal.toStringAsFixed(2)}',
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 16,
